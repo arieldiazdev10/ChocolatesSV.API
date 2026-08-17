@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="ChocolatesSV.API/ChocolatesSV.API.csproj" />
+  <Project Path="ChocolatesSV.BL/ChocolatesSV.BL.csproj" />
+  <Project Path="ChocolatesSV.Common/ChocolatesSV.Common.csproj" />
+  <Project Path="ChocolatesSV.DAL/ChocolatesSV.DAL.csproj" />
+  <Project Path="ChocolatesSV.Entities/ChocolatesSV.Entities.csproj" />
+</Solution>

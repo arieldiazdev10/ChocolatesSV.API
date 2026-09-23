@@ -1,5 +1,6 @@
 ﻿using ChocolatesSV.BL.Interfaces;
 using ChocolatesSV.Entities.DTO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
@@ -37,6 +38,7 @@ namespace ChocolatesSV.API.Controllers
         }
 
         // POST: api/admin/products
+        [Authorize]
         [HttpPost("api/admin/products")]
         [ProducesResponseType(typeof(ProductoDto), (int)HttpStatusCode.Created)]
         public async Task<IActionResult> Post([FromBody] ProductoDto model)
@@ -46,6 +48,7 @@ namespace ChocolatesSV.API.Controllers
         }
 
         // PUT: api/admin/products/{id}
+        [Authorize]
         [HttpPut("api/admin/products/{id:int}")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
@@ -58,6 +61,7 @@ namespace ChocolatesSV.API.Controllers
         }
 
         // DELETE: api/admin/products/{id}
+        [Authorize]
         [HttpDelete("api/admin/products/{id:int}")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]

@@ -15,5 +15,44 @@ namespace ChocolatesSV.API.Controllers
         {
             var result = await service.GetAllOrdersAsync(); return Ok(result);
         }
+
+        [HttpGet("api/admin/orders/{id:int}")]
+        [ProducesResponseType(typeof(PedidoDto), (int)HttpStatusCode.OK)]
+
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> GetById(int id)
+        {
+            var result = await service.GetOrderByIdAsync(id);
+
+            return result != null
+                ? Ok(result)
+                : NotFound();
+        }
+
+        [HttpPatch("api/admin/orders/{id:int}/status")]
+        [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> UpdateStatus(int id, [FromBody] ActualizarEstadoPedidoDto model)
+        {
+            var result =
+            await service.UpdateOrderStatusAsync(
+            id,
+            model.Estado);
+
+            return result
+            ? Ok(new { message = "Estado actualizado" })
+            : NotFound(new
+            {
+                message = "Pedido no encontrado o estado inválido"
+            });
+        }
     }
+
+    
 }
+
+
+        
+  
+  
+

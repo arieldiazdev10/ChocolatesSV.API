@@ -18,8 +18,12 @@ namespace ChocolatesSV.BL.Services
                 cfg.AddProfile<PedidoProfile>();
             });
 
-            services.AddAutoMapper(cfg => cfg.AddProfile<ProductoProfile>());
+           
             services.AddTransient<IProductoService, ProductoService>();
+            services.AddTransient<IPedidoService, PedidoService>();
+            services.AddTransient<IAuthService, AuthService>();
+            services.AddTransient<IContentService, ContentService>();
+
             return services;
         }
 

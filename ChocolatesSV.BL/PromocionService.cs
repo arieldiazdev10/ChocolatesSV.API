@@ -14,6 +14,12 @@ namespace ChocolatesSV.BL
             return mapper.Map<List<PromocionDto>>(promociones);
         }
 
+        public async Task<List<PromocionDto>> GetAllPromotionsAsync()
+        {
+            var promociones = await promocionRepository.GetAllPromotionsAsync();
+            return mapper.Map<List<PromocionDto>>(promociones);
+        }
+
         public async Task<PromocionDto?> GetPromotionByIdAsync(int id)
         {
             var promocion = await promocionRepository.GetPromotionByIdAsync(id);

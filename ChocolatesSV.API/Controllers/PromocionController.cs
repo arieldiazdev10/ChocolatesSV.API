@@ -33,6 +33,16 @@ namespace ChocolatesSV.API.Controllers
         [HttpGet("api/admin/promotions/{id:int}")]
         [ProducesResponseType(typeof(PromocionDto), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
+
+        // GET: api/admin/promotions
+        [Authorize]
+        [HttpGet("api/admin/promotions")]
+        [ProducesResponseType(typeof(IEnumerable<PromocionDto>), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> GetAll()
+        {
+            var result = await service.GetAllPromotionsAsync();
+            return Ok(result);
+        }
         public async Task<IActionResult> Get(int id)
         {
             var result = await service.GetPromotionByIdAsync(id);

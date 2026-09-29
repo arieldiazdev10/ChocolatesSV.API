@@ -27,6 +27,8 @@ namespace ChocolatesSV.DAL
                                                 INNER JOIN Productos p ON p.ProductoID = pp.ProductoID
                                                 WHERE pp.PromocionID IN @Ids";
 
+            public const string GetAll = "SELECT * FROM Promociones ORDER BY FechaCreacion DESC";
+
             public const string Insert = @"INSERT INTO Promociones (Nombre, Descripcion, TipoPromocion, TipoDescuento, ValorDescuento, PrecioCombo, CodigoCupon, MontoMinimoCompra, UsosMaximos, CategoriaID, FechaInicio, FechaFin, Activo)
                                            VALUES (@Nombre, @Descripcion, @TipoPromocion, @TipoDescuento, @ValorDescuento, @PrecioCombo, @CodigoCupon, @MontoMinimoCompra, @UsosMaximos, @CategoriaID, @FechaInicio, @FechaFin, @Activo);
                                            SELECT CAST(SCOPE_IDENTITY() AS int);";
@@ -48,6 +50,13 @@ namespace ChocolatesSV.DAL
         public async Task<List<Promocion>> GetActivePromotionsAsync()
         {
             List<Promocion> promociones = [.. await databaseRepository.QueryAsync<Promocion>(Queries.GetActive)];
+            await LoadProductsAsync(promociones);
+            return promociones;
+        }
+
+        public async Task<List<Promocion>> GetAllPromotionsAsync()
+        {
+            List<Promocion> promociones = [.. await databaseRepository.QueryAsync<Promocion>(Queries.GetAll)];
             await LoadProductsAsync(promociones);
             return promociones;
         }

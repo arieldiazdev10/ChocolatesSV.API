@@ -7,6 +7,7 @@ using Scalar.AspNetCore;
 using ChocolatesSV.Common;
 using ChocolatesSV.DAL.Services;
 using ChocolatesSV.BL.Services;
+using Microsoft.AspNetCore.Authentication;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -81,9 +82,14 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-// 9. Endpoints de autenticación
-app.MapGroup("/api/auth")
-    .WithTags("Auth")
-    .MapIdentityApi<Usuario>();
+var authGroup = app.MapGroup("/api/auth").WithTags("Auth");
+
+authGroup.MapIdentityApi<Usuario>();
+
+authGroup.MapPost("/logout", async (HttpContext context) =>
+{
+    await context.SignOutAsync(IdentityConstants.ApplicationScheme);
+    return Results.Ok(new { message = "Sesión cerrada" });
+});
 
 app.Run();

@@ -30,8 +30,8 @@ namespace ChocolatesSV.BL
         {
             var entity = mapper.Map<Producto>(producto);
             var newId = await productoRepository.InsertProductAsync(entity);
-            producto.Id = newId;
-            return producto;
+            var created = await productoRepository.GetProductByIdAsync(newId);
+            return mapper.Map<ProductoDto>(created);
         }
 
         public async Task<ProductoDto?> UpdateProductAsync(int id, ProductoDto producto)

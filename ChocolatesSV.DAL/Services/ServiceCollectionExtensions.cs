@@ -12,6 +12,7 @@ namespace ChocolatesSV.DAL.Services
         {    
             services.AddTransient<IDatabaseRepository, DatabaseRepository>();
             services.AddTransient<IProductoRepository, ProductoRepository>();
+            services.AddTransient<ICategoriaRepository, CategoriaRepository>();
             services.AddTransient<IPedidoRepository, PedidoRepository>();
             return services;
         }

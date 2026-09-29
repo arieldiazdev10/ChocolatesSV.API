@@ -6,10 +6,10 @@ using ChocolatesSV.Entities.Models;
 
 namespace ChocolatesSV.DAL
 {
-
+   
     public class PedidoRepository(IDatabaseRepository databaseRepository) : IPedidoRepository
     {
-
+        
         private static class Queries
         {
             public const string GetAll = "SELECT * FROM Pedidos";

@@ -1,7 +1,7 @@
-﻿using System;
+﻿using ChocolatesSV.Entities.DTO;
+using System;
 using System.Collections.Generic;
 using System.Text;
-using ChocolatesSV.Entities.DTO;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace ChocolatesSV.BL.Interfaces
@@ -12,6 +12,5 @@ namespace ChocolatesSV.BL.Interfaces
         Task<PedidoDto?> GetOrderByIdAsync(int id);
         Task<bool> UpdateOrderStatusAsync(int pedidoId,string estado);
         Task<TrackingResponseDto?> TrackOrderAsync(int pedidoId, string correo);
-
     }
 }

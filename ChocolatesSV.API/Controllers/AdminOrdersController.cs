@@ -1,13 +1,16 @@
 ﻿using ChocolatesSV.BL.Interfaces;
 using ChocolatesSV.Entities.DTO;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using System.Net;
 
 namespace ChocolatesSV.API.Controllers
 {
     [ApiController]
+    [Authorize]
     public class AdminOrdersController(IPedidoService service) : ControllerBase
     {
+        [Authorize]
         [HttpGet("api/admin/orders")]
         [ProducesResponseType(typeof(IEnumerable<PedidoDto>), (int)HttpStatusCode.OK)]
 
@@ -15,7 +18,7 @@ namespace ChocolatesSV.API.Controllers
         {
             var result = await service.GetAllOrdersAsync(); return Ok(result);
         }
-
+        [Authorize]
         [HttpGet("api/admin/orders/{id:int}")]
         [ProducesResponseType(typeof(PedidoDto), (int)HttpStatusCode.OK)]
 
@@ -28,7 +31,7 @@ namespace ChocolatesSV.API.Controllers
                 ? Ok(result)
                 : NotFound();
         }
-
+        [Authorize]
         [HttpPatch("api/admin/orders/{id:int}/status")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
@@ -47,12 +50,7 @@ namespace ChocolatesSV.API.Controllers
             });
         }
     }
-
-    
 }
 
-
-        
+     
   
-  
-

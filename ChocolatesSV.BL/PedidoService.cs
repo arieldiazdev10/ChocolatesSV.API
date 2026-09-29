@@ -8,7 +8,9 @@ using ChocolatesSV.BL.Interfaces;
 
 namespace ChocolatesSV.BL
 {
-    public class PedidoService(IPedidoRepository pedidoRepository, IMapper mapper) : IPedidoService
+    public class PedidoService(
+        IPedidoRepository pedidoRepository,
+        IMapper mapper) : IPedidoService
     {
         public async Task<List<PedidoDto>> GetAllOrdersAsync()
         {
@@ -40,7 +42,11 @@ namespace ChocolatesSV.BL
                 return false;
             }
 
-            return await pedidoRepository.UpdateOrderStatusAsync(pedidoId, estado);
+            return await pedidoRepository
+            .UpdateOrderStatusAsync(
+            pedidoId,
+            estado
+            );
         }
 
         public async Task<TrackingResponseDto?> TrackOrderAsync(int pedidoId, string correo)
@@ -61,6 +67,5 @@ namespace ChocolatesSV.BL
                 FechaEntrega = pedido.FechaEntrega
             };
         }
-
     }
 }

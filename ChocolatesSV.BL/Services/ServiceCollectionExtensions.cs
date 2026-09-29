@@ -13,13 +13,15 @@ namespace ChocolatesSV.BL.Services
                 cfg.AddProfile<ProductoProfile>();
                 cfg.AddProfile<PedidoProfile>();
                 cfg.AddProfile<CategoriaProfile>();
-                cfg.AddProfile<PromocionProfile>();     // Dev 2
+                cfg.AddProfile<PromocionProfile>();
+                cfg.AddProfile<DashboardProfile>();
             });
 
             services.AddTransient<IProductoService, ProductoService>();
             services.AddTransient<ICategoriaService, CategoriaService>();
             services.AddTransient<IPedidoService, PedidoService>();
-            services.AddTransient<IPromocionService, PromocionService>();   // Dev 2
+            services.AddTransient<IPromocionService, PromocionService>();
+            services.AddTransient<IDashboardService, DashboardService>();
             return services;
         }
     }

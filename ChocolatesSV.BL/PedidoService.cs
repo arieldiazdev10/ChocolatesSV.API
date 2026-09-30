@@ -5,11 +5,17 @@ using AutoMapper;
 using ChocolatesSV.DAL.Interfaces;
 using ChocolatesSV.Entities.DTO;
 using ChocolatesSV.BL.Interfaces;
+using ChocolatesSV.Entities.Models;
 
 namespace ChocolatesSV.BL
 {
     public class PedidoService(
         IPedidoRepository pedidoRepository,
+        IProductoRepository productoRepository,
+        IPromocionRepository promocionRepository,
+        IDatabaseRepository databaseRepository,
+        ICartService cartService,
+        IPaymentSimulationService paymentSimulationService,
         IMapper mapper) : IPedidoService
     {
         public async Task<List<PedidoDto>> GetAllOrdersAsync()
@@ -18,54 +24,86 @@ namespace ChocolatesSV.BL
             return mapper.Map<List<PedidoDto>>(pedidos);
         }
 
-        public async Task<PedidoDto?> GetOrderByIdAsync(int id)
+        public async Task<CreateOrderResponseDto> CreateOrderAsync(CreateOrderRequestDto request)
         {
-            var pedido = await pedidoRepository.GetOrderByIdAsync(id);
-
-            return mapper.Map<PedidoDto?>(pedido);
-        }
-
-        public async Task<bool> UpdateOrderStatusAsync(int pedidoId, string estado)
-        {
-            string[] estadosValidos =
-            [
-            "Pendiente",
-            "Confirmado",
-            "En Preparacion",
-            "Enviado",
-            "Entregado",
-            "Cancelado"
-            ];
-
-            if (!estadosValidos.Contains(estado))
+            var cart = await cartService.CalculateAsync(new CalculateCartRequestDto
             {
-                return false;
-            }
+                Items = request.Items,
+                CodigoCupon = request.CodigoCupon
+            });
 
-            return await pedidoRepository
-            .UpdateOrderStatusAsync(
-            pedidoId,
-            estado
-            );
-        }
-
-        public async Task<TrackingResponseDto?> TrackOrderAsync(int pedidoId, string correo)
-        {
-            var pedido = await pedidoRepository.TrackOrderAsync(pedidoId, correo);
-
-            if (pedido == null)
+            var paymentRequest = new SimulatePaymentRequestDto
             {
-                return null;
-            }
-
-            return new TrackingResponseDto
-            {
-                PedidoId = pedido.PedidoID,
-                Cliente = pedido.NombreCliente,
-                Estado = pedido.EstadoPedido,
-                Total = pedido.Total,
-                FechaEntrega = pedido.FechaEntrega
+                NumeroTarjeta = request.Pago.NumeroTarjeta,
+                FechaExpiracion = request.Pago.FechaExpiracion,
+                Cvv = request.Pago.Cvv,
+                Monto = cart.Total
             };
+            var payment = await paymentSimulationService.SimulateAsync(paymentRequest);
+            if (!payment.Aprobado)
+                throw new ArgumentException(payment.Mensaje);
+
+            var codigoOrden = $"ORD-{Guid.NewGuid():N}"[..24].ToUpperInvariant();
+            var pedido = new Pedido
+            {
+                CodigoOrden = codigoOrden,
+                NombreCliente = request.NombreCliente.Trim(),
+                CorreoCliente = request.CorreoCliente.Trim(),
+                TelefonoCliente = request.TelefonoCliente?.Trim() ?? string.Empty,
+                FechaEntrega = request.FechaEntrega,
+                Comentarios = request.Comentarios?.Trim(),
+                SubTotal = cart.Subtotal,
+                DescuentoAplicado = cart.Descuento,
+                Total = cart.Total,
+                EstadoPedido = "Pendiente",
+                MetodoPago = "Simulado",
+                ReferenciaPago = payment.Referencia,
+                FechaCreacion = DateTime.UtcNow
+            };
+
+            var details = cart.Items.Select(item => new PedidoDetalle
+            {
+                ProductoID = item.ProductoId,
+                NombreProducto = item.Nombre,
+                PrecioUnitario = item.PrecioUnitario,
+                Cantidad = item.Cantidad,
+                Subtotal = item.Subtotal
+            }).ToList();
+
+            using var transaction = await databaseRepository.BeginTransactionAsync();
+            try
+            {
+                foreach (var detail in details)
+                {
+                    if (!await productoRepository.DecreaseStockAsync(detail.ProductoID, detail.Cantidad, transaction))
+                        throw new InvalidOperationException($"Stock insuficiente para el producto {detail.NombreProducto}");
+                }
+
+                if (!string.IsNullOrWhiteSpace(request.CodigoCupon)
+                    && !await promocionRepository.IncrementCouponUsageAsync(request.CodigoCupon.Trim().ToUpperInvariant(), transaction))
+                    throw new InvalidOperationException("El cupón ya no está disponible");
+
+                var orderId = await pedidoRepository.InsertOrderAsync(pedido, transaction);
+                await pedidoRepository.InsertDetailsAsync(orderId, details, transaction);
+                transaction.Commit();
+
+                return new CreateOrderResponseDto
+                {
+                    Id = orderId,
+                    NumeroOrden = codigoOrden,
+                    Estado = pedido.EstadoPedido,
+                    Subtotal = pedido.SubTotal,
+                    Descuento = pedido.DescuentoAplicado,
+                    Total = pedido.Total,
+                    ReferenciaPago = pedido.ReferenciaPago ?? string.Empty,
+                    FechaCreacion = pedido.FechaCreacion
+                };
+            }
+            catch
+            {
+                transaction.Rollback();
+                throw;
+            }
         }
     }
 }

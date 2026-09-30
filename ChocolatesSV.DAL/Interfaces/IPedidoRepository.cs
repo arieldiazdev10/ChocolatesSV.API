@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using ChocolatesSV.Entities.Models;
+using System.Data;
 
 namespace ChocolatesSV.DAL.Interfaces
 {
@@ -11,5 +12,7 @@ namespace ChocolatesSV.DAL.Interfaces
         Task<Pedido?> GetOrderByIdAsync(int id);
         Task<bool> UpdateOrderStatusAsync(int pedidoId, string estado);
         Task<Pedido?> TrackOrderAsync(int pedidoId, string correo);
+        Task<int> InsertOrderAsync(Pedido pedido, IDbTransaction transaction);
+        Task InsertDetailsAsync(int pedidoId, IEnumerable<PedidoDetalle> detalles, IDbTransaction transaction);
     }
 }

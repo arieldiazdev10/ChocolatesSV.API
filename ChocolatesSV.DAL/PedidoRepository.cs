@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using ChocolatesSV.DAL.Interfaces;
 using ChocolatesSV.Entities.Models;
+using System.Data;
 
 namespace ChocolatesSV.DAL
 {
@@ -11,52 +12,56 @@ namespace ChocolatesSV.DAL
         private static class Queries
         {
             public const string GetAll = "SELECT * FROM Pedidos";
-            public const string GetById = "SELECT * FROM Pedidos WHERE PedidoID = @PedidoID";
-            public const string UpdateStatus =
-                @"UPDATE Pedidos
-                SET EstadoPedido = @EstadoPedido
-                WHERE PedidoID = @PedidoID";
-
-            public const string TrackOrder =
-                @"SELECT *
-                 FROM Pedidos
-                 WHERE PedidoID = @PedidoID
-                 AND CorreoCliente = @CorreoCliente";
+            public const string Insert = @"INSERT INTO Pedidos
+                (CodigoOrden, NombreCliente, CorreoCliente, TelefonoCliente, FechaEntrega, Comentarios,
+                 SubTotal, DescuentoAplicado, Total, EstadoPedido, MetodoPago, ReferenciaPago, FechaCreacion)
+                VALUES (@CodigoOrden, @NombreCliente, @CorreoCliente, @TelefonoCliente, @FechaEntrega, @Comentarios,
+                        @SubTotal, @DescuentoAplicado, @Total, @EstadoPedido, @MetodoPago, @ReferenciaPago, @FechaCreacion);
+                SELECT CAST(SCOPE_IDENTITY() AS int);";
+            public const string InsertDetail = @"INSERT INTO PedidoDetalles
+                (PedidoID, ProductoID, NombreProducto, PrecioUnitario, Cantidad, Subtotal)
+                VALUES (@PedidoID, @ProductoID, @NombreProducto, @PrecioUnitario, @Cantidad, @Subtotal);";
         }
 
         public async Task<List<Pedido>> GetAllOrdersAsync()
         {
             return [.. await databaseRepository.QueryAsync<Pedido>(Queries.GetAll)];
         }
-        public async Task<Pedido?> GetOrderByIdAsync(int id)
-        {
-            return await databaseRepository.QueryFirstOrDefaultAsync<Pedido>(Queries.GetById, new { PedidoID = id });
 
-        }
-        public async Task<bool> UpdateOrderStatusAsync(int pedidoId, string estado)
+        public async Task<int> InsertOrderAsync(Pedido pedido, IDbTransaction transaction)
         {
-            var rowsAffected =
-            await databaseRepository.ExecuteAsync(
-            Queries.UpdateStatus,
-            new
+            return await databaseRepository.ExecuteScalarAsync<int>(Queries.Insert, new
             {
-                PedidoID = pedidoId,
-                EstadoPedido = estado
-            });
-
-            return rowsAffected > 0;
+                pedido.CodigoOrden,
+                pedido.NombreCliente,
+                pedido.CorreoCliente,
+                pedido.TelefonoCliente,
+                pedido.FechaEntrega,
+                pedido.Comentarios,
+                pedido.SubTotal,
+                pedido.DescuentoAplicado,
+                pedido.Total,
+                pedido.EstadoPedido,
+                pedido.MetodoPago,
+                pedido.ReferenciaPago,
+                pedido.FechaCreacion
+            }, transaction);
         }
 
-        public async Task<Pedido?> TrackOrderAsync(int pedidoId, string correo)
+        public async Task InsertDetailsAsync(int pedidoId, IEnumerable<PedidoDetalle> detalles, IDbTransaction transaction)
         {
-            return await databaseRepository
-            .QueryFirstOrDefaultAsync<Pedido>(
-            Queries.TrackOrder,
-            new
+            foreach (var detalle in detalles)
             {
-                PedidoID = pedidoId,
-                CorreoCliente = correo
-            });
+                await databaseRepository.ExecuteAsync(Queries.InsertDetail, new
+                {
+                    PedidoID = pedidoId,
+                    detalle.ProductoID,
+                    detalle.NombreProducto,
+                    detalle.PrecioUnitario,
+                    detalle.Cantidad,
+                    detalle.Subtotal
+                }, transaction);
+            }
         }
     }
 }

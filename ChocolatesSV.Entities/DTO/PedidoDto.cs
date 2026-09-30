@@ -7,6 +7,7 @@ namespace ChocolatesSV.Entities.DTO
     public class PedidoDto
     {
         public int Id { get; set; }
+        public string NumeroOrden { get; set; } = string.Empty;
 
         public string Cliente { get; set; } = string.Empty;
         public string Correo { get; set; } = string.Empty;
@@ -16,5 +17,7 @@ namespace ChocolatesSV.Entities.DTO
         public string Estado { get; set; } = string.Empty;
 
         public DateTime FechaEntrega { get; set; }
+
+        public List<PedidoDetalleDto> Detalles { get; set; } = [];
     }
 }

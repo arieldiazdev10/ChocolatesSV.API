@@ -6,5 +6,7 @@ namespace ChocolatesSV.DAL.Interfaces
     {
         public Task<ResumenVentas> GetSalesSummaryAsync();
         public Task<List<PedidosPorEstado>> GetOrdersByStatusAsync();
+
+        public Task<List<ProductoMasVendido>> GetTopProductsAsync(int top, DateTime? desde, DateTime? hasta);
     }
 }

@@ -18,6 +18,14 @@ namespace ChocolatesSV.BL.Profiles
 
             CreateMap<PedidosPorEstado, EstadoPedidoDto>()
                 .ForMember(dest => dest.Estado, opt => opt.MapFrom(src => src.EstadoPedido));
+
+            CreateMap<ProductoMasVendido, TopProductoDto>()
+    .ForMember(dest => dest.IdProducto, opt => opt.MapFrom(src => src.ProductoID))
+    .ForMember(dest => dest.Producto, opt => opt.MapFrom(src => src.Nombre))
+    .ForMember(dest => dest.ImagenUrl, opt => opt.MapFrom(src => src.URLImagen))
+    .ForMember(dest => dest.UnidadesVendidas, opt => opt.MapFrom(src => src.CantidadVendida))
+    .ForMember(dest => dest.Ingresos, opt => opt.MapFrom(src => src.TotalVendido))
+    .ForMember(dest => dest.Posicion, opt => opt.Ignore());
         }
     }
 }

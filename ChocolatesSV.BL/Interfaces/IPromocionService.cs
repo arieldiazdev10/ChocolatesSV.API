@@ -10,5 +10,7 @@ namespace ChocolatesSV.BL.Interfaces
         public Task<PromocionDto> InsertPromotionAsync(PromocionDto promocion);
         public Task<PromocionDto?> UpdatePromotionAsync(int id, PromocionDto promocion);
         public Task<bool> DeletePromotionAsync(int id);
+
+        public Task<List<PromocionDto>> GetAllPromotionsAsync();
     }
 }

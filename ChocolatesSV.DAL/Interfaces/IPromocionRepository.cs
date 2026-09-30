@@ -13,5 +13,7 @@ namespace ChocolatesSV.DAL.Interfaces
         public Task<int> InsertPromotionAsync(Promocion promocion);
         public Task<bool> UpdatePromotionAsync(Promocion promocion);
         public Task<bool> DeletePromotionAsync(int id);
+
+        public Task<List<Promocion>> GetAllPromotionsAsync();
     }
 }

@@ -28,6 +28,16 @@ namespace ChocolatesSV.API.Controllers
             return result.Valido ? Ok(result) : BadRequest(result);
         }
 
+        // GET: api/admin/promotions
+        [Authorize]
+        [HttpGet("api/admin/promotions")]
+        [ProducesResponseType(typeof(IEnumerable<PromocionDto>), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> GetAll()
+        {
+            var result = await service.GetAllPromotionsAsync();
+            return Ok(result);
+        }
+
         // GET: api/admin/promotions/{id}  (apoyo para CreatedAtAction y para el formulario de edición)
         [Authorize]
         [HttpGet("api/admin/promotions/{id:int}")]
@@ -38,6 +48,8 @@ namespace ChocolatesSV.API.Controllers
             var result = await service.GetPromotionByIdAsync(id);
             return result != null ? Ok(result) : NotFound();
         }
+       
+        
 
         // POST: api/admin/promotions
         [Authorize]

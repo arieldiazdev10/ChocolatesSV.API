@@ -26,6 +26,20 @@ namespace ChocolatesSV.DAL
                                                    FROM Pedidos
                                                    GROUP BY EstadoPedido
                                                    ORDER BY Cantidad DESC";
+
+            public const string TopProducts = @"
+    SELECT TOP (@Top)
+        p.ProductoID, p.Nombre, p.URLImagen,
+        SUM(d.Cantidad) AS CantidadVendida,
+        SUM(d.Subtotal) AS TotalVendido
+    FROM PedidoDetalles d
+    INNER JOIN Pedidos   pe ON pe.PedidoID  = d.PedidoID
+    INNER JOIN Productos p  ON p.ProductoID = d.ProductoID
+    WHERE pe.EstadoPedido <> 'Cancelado'
+      AND (@Desde IS NULL OR pe.FechaCreacion >= @Desde)
+      AND (@Hasta IS NULL OR pe.FechaCreacion < DATEADD(DAY, 1, @Hasta))
+    GROUP BY p.ProductoID, p.Nombre, p.URLImagen
+    ORDER BY CantidadVendida DESC, TotalVendido DESC";
         }
 
         public async Task<ResumenVentas> GetSalesSummaryAsync()
@@ -37,6 +51,13 @@ namespace ChocolatesSV.DAL
         public async Task<List<PedidosPorEstado>> GetOrdersByStatusAsync()
         {
             return [.. await databaseRepository.QueryAsync<PedidosPorEstado>(Queries.OrdersByStatus)];
+        }
+
+        public async Task<List<ProductoMasVendido>> GetTopProductsAsync(int top, DateTime? desde, DateTime? hasta)
+        {
+            return [.. await databaseRepository.QueryAsync<ProductoMasVendido>(
+        Queries.TopProducts,
+        new { Top = top, Desde = desde, Hasta = hasta })];
         }
     }
 }

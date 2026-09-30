@@ -19,5 +19,26 @@ namespace ChocolatesSV.API.Controllers
             var result = await service.GetSummaryAsync();
             return Ok(result);
         }
+
+        // GET: api/admin/dashboard/top-products?top=5&desde=2026-09-01&hasta=2026-09-30
+        [HttpGet("api/admin/dashboard/top-products")]
+        [ProducesResponseType(typeof(IEnumerable<TopProductoDto>), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
+        public async Task<IActionResult> GetTopProducts(
+            [FromQuery] int top = 5,
+            [FromQuery] DateTime? desde = null,
+            [FromQuery] DateTime? hasta = null)
+        {
+            try
+            {
+                var result = await service.GetTopProductsAsync(top, desde, hasta);
+                return Ok(result);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
     }
 }

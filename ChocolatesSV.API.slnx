@@ -4,4 +4,5 @@
   <Project Path="ChocolatesSV.Common/ChocolatesSV.Common.csproj" />
   <Project Path="ChocolatesSV.DAL/ChocolatesSV.DAL.csproj" />
   <Project Path="ChocolatesSV.Entities/ChocolatesSV.Entities.csproj" />
+  <Project Path="ChocolatesSV.Tests/ChocolatesSV.Tests.csproj" Id="04242c6d-6a5c-4ee7-9e93-95390b9d569d" />
 </Solution>

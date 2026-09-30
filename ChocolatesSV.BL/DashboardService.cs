@@ -22,5 +22,26 @@ namespace ChocolatesSV.BL
 
             return dto;
         }
+
+        public async Task<List<TopProductoDto>> GetTopProductsAsync(int top, DateTime? desde, DateTime? hasta)
+        {
+            // Reglas de negocio
+            if (top < 1 || top > 20)
+                throw new ArgumentException("El parámetro top debe estar entre 1 y 20");
+
+            if (desde.HasValue && hasta.HasValue && hasta < desde)
+                throw new ArgumentException("La fecha 'hasta' no puede ser anterior a 'desde'");
+
+            var productos = await dashboardRepository.GetTopProductsAsync(top, desde, hasta);
+            var resultado = mapper.Map<List<TopProductoDto>>(productos);
+
+            // Ranking: 1, 2, 3...
+            for (int i = 0; i < resultado.Count; i++)
+            {
+                resultado[i].Posicion = i + 1;
+            }
+
+            return resultado;
+        }
     }
 }

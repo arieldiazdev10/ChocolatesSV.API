@@ -8,5 +8,6 @@ namespace ChocolatesSV.BL.Interfaces
     public interface IPedidoService
     {
         Task<List<PedidoDto>> GetAllOrdersAsync();
+        Task<CreateOrderResponseDto> CreateOrderAsync(CreateOrderRequestDto request);
     }
 }

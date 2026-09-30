@@ -9,6 +9,7 @@ namespace ChocolatesSV.Entities.Models
     {
         [Key]
         public int PedidoID { get; set; }
+        public string CodigoOrden { get; set; } = string.Empty;
         public string NombreCliente { get; set; } = string.Empty;
 
         public string CorreoCliente { get; set; } = string.Empty;
@@ -32,6 +33,8 @@ namespace ChocolatesSV.Entities.Models
         public string? ReferenciaPago { get; set; }
 
         public DateTime FechaCreacion { get; set; }
+
+        public List<PedidoDetalle> Detalles { get; set; } = [];
 
     }
 }

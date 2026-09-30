@@ -22,6 +22,8 @@ namespace ChocolatesSV.BL.Services
             services.AddTransient<IPedidoService, PedidoService>();
             services.AddTransient<IPromocionService, PromocionService>();
             services.AddTransient<IDashboardService, DashboardService>();
+            services.AddTransient<ICartService, CartService>();
+            services.AddTransient<IPaymentSimulationService, PaymentSimulationService>();
             return services;
         }
     }

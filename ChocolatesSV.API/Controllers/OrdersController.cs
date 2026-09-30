@@ -32,5 +32,22 @@ namespace ChocolatesSV.API.Controllers
                 return BadRequest(new { message = ex.Message });
             }
         }
+
+        [HttpPost("api/orders/tracking")]
+        [ProducesResponseType(typeof(TrackOrderResponseDto), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<IActionResult> Track([FromBody] TrackOrderRequestDto request)
+        {
+            try
+            {
+                var result = await service.TrackOrderAsync(request);
+                return Ok(result);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+        }
     }
 }

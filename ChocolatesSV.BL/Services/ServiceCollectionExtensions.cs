@@ -15,6 +15,7 @@ namespace ChocolatesSV.BL.Services
                 cfg.AddProfile<CategoriaProfile>();
                 cfg.AddProfile<PromocionProfile>();
                 cfg.AddProfile<DashboardProfile>();
+                cfg.AddProfile<ContenidoProfile>();
             });
 
             services.AddTransient<IProductoService, ProductoService>();
@@ -24,6 +25,7 @@ namespace ChocolatesSV.BL.Services
             services.AddTransient<IDashboardService, DashboardService>();
             services.AddTransient<ICartService, CartService>();
             services.AddTransient<IPaymentSimulationService, PaymentSimulationService>();
+            services.AddTransient<IContenidoService, ContenidoService>();
             return services;
         }
     }

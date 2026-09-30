@@ -11,6 +11,17 @@ namespace ChocolatesSV.BL
         public async Task<List<PromocionDto>> GetActivePromotionsAsync()
         {
             var promociones = await promocionRepository.GetActivePromotionsAsync();
+
+            // Regla de negocio: la vista pública de ofertas no expone cupones;
+            // el código solo lo conoce quien lo recibe y se valida en el carrito.
+            var publicas = promociones.Where(p => p.TipoPromocion != "Cupon").ToList();
+
+            return mapper.Map<List<PromocionDto>>(publicas);
+        }
+
+        public async Task<List<PromocionDto>> GetAllPromotionsAsync()
+        {
+            var promociones = await promocionRepository.GetAllPromotionsAsync();
             return mapper.Map<List<PromocionDto>>(promociones);
         }
 

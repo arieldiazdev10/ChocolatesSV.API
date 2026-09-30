@@ -4,3 +4,47 @@ GET {{ChocolatesSV.API_HostAddress}}/weatherforecast/
 Accept: application/json
 
 ###
+
+POST {{ChocolatesSV.API_HostAddress}}/api/cart/calculate
+Content-Type: application/json
+
+{
+  "items": [
+    { "productoId": 1, "cantidad": 2 }
+  ],
+  "codigoCupon": "DULCE10"
+}
+
+###
+
+POST {{ChocolatesSV.API_HostAddress}}/api/checkout/simulate-payment
+Content-Type: application/json
+
+{
+  "numeroTarjeta": "4111111111111111",
+  "fechaExpiracion": "12/30",
+  "cvv": "123",
+  "monto": 10.00
+}
+
+###
+
+POST {{ChocolatesSV.API_HostAddress}}/api/orders
+Content-Type: application/json
+
+{
+  "nombreCliente": "Cliente Guest",
+  "correoCliente": "cliente@example.com",
+  "telefonoCliente": "70000000",
+  "fechaEntrega": "2026-12-31T10:00:00",
+  "items": [
+    { "productoId": 1, "cantidad": 2 }
+  ],
+  "codigoCupon": "DULCE10",
+  "pago": {
+    "numeroTarjeta": "4111111111111111",
+    "fechaExpiracion": "12/30",
+    "cvv": "123",
+    "monto": 10.00
+  }
+}

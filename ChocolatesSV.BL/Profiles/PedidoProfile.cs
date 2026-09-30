@@ -14,11 +14,15 @@ namespace ChocolatesSV.BL.Profiles
             CreateMap<Pedido, PedidoDto>()
 
                 .ForMember(d => d.Id, o => o.MapFrom(s => s.PedidoID))
+                .ForMember(d => d.NumeroOrden, o => o.MapFrom(s => s.CodigoOrden))
                 .ForMember(d => d.Cliente, o => o.MapFrom(s => s.NombreCliente))
                 .ForMember(d => d.Correo, o => o.MapFrom(s => s.CorreoCliente))
                 .ForMember(d => d.Telefono, o => o.MapFrom(s => s.TelefonoCliente))
                 .ForMember(d => d.Estado, o => o.MapFrom(s => s.EstadoPedido))
                 .ForMember(d => d.FechaEntrega, o => o.MapFrom(s => s.FechaEntrega));
+
+            CreateMap<PedidoDetalle, PedidoDetalleDto>()
+                .ForMember(d => d.ProductoId, o => o.MapFrom(s => s.ProductoID));
 
 
 

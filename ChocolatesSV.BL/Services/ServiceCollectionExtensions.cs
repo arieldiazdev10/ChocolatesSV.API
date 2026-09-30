@@ -1,7 +1,5 @@
 ﻿using ChocolatesSV.BL.Interfaces;
 using ChocolatesSV.BL.Profiles;
-using ChocolatesSV.DAL;
-using ChocolatesSV.DAL.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ChocolatesSV.BL.Services
@@ -24,7 +22,6 @@ namespace ChocolatesSV.BL.Services
             services.AddTransient<IPedidoService, PedidoService>();
             services.AddTransient<IPromocionService, PromocionService>();
             services.AddTransient<IDashboardService, DashboardService>();
-            services.AddTransient<IContentService, ContentService>();
             services.AddTransient<ICartService, CartService>();
             services.AddTransient<IPaymentSimulationService, PaymentSimulationService>();
             return services;

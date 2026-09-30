@@ -17,6 +17,11 @@ namespace ChocolatesSV.DAL
             public const string GetById = "SELECT * FROM Promociones WHERE PromocionID = @PromocionID";
 
             public const string GetByCoupon = "SELECT * FROM Promociones WHERE CodigoCupon = @CodigoCupon";
+            public const string IncrementCouponUsage = @"UPDATE Promociones
+                SET UsosActuales = UsosActuales + 1
+                WHERE CodigoCupon = @CodigoCupon
+                  AND Activo = 1
+                  AND (UsosMaximos IS NULL OR UsosActuales < UsosMaximos)";
 
             public const string CouponExists = @"SELECT COUNT(1) FROM Promociones
                                                  WHERE CodigoCupon = @CodigoCupon
@@ -71,9 +76,17 @@ namespace ChocolatesSV.DAL
             return promocion;
         }
 
-        public async Task<Promocion?> GetPromotionByCouponAsync(string codigo)
+        public async Task<Promocion?> GetPromotionByCouponAsync(string codigo, IDbTransaction? transaction = null)
         {
-            return await databaseRepository.QueryFirstOrDefaultAsync<Promocion>(Queries.GetByCoupon, new { CodigoCupon = codigo });
+            return await databaseRepository.QueryFirstOrDefaultAsync<Promocion>(Queries.GetByCoupon, new { CodigoCupon = codigo }, transaction);
+        }
+
+        public async Task<bool> IncrementCouponUsageAsync(string codigo, IDbTransaction transaction)
+        {
+            return await databaseRepository.ExecuteAsync(
+                Queries.IncrementCouponUsage,
+                new { CodigoCupon = codigo },
+                transaction) > 0;
         }
 
         public async Task<bool> CouponExistsAsync(string codigo, int? excluirId = null)

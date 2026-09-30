@@ -1,5 +1,6 @@
 ﻿using ChocolatesSV.BL.Interfaces;
 using ChocolatesSV.Entities.DTO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
@@ -8,7 +9,6 @@ namespace ChocolatesSV.API.Controllers
     [ApiController]
     public class ProductoController(IProductoService service) : ControllerBase
     {
-        // GET: api/products
         [HttpGet("api/products")]
         [ProducesResponseType(typeof(IEnumerable<ProductoDto>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetActiveProducts()
@@ -17,7 +17,6 @@ namespace ChocolatesSV.API.Controllers
             return Ok(result);
         }
 
-        // GET: api/products/featured
         [HttpGet("api/products/featured")]
         [ProducesResponseType(typeof(IEnumerable<ProductoDto>), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> GetFeaturedProducts()
@@ -26,28 +25,31 @@ namespace ChocolatesSV.API.Controllers
             return Ok(result);
         }
 
-        // GET: api/products/{id}
         [HttpGet("api/products/{id:int}")]
         [ProducesResponseType(typeof(ProductoDto), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> Get(int id)
         {
             var result = await service.GetProductByIdAsync(id);
-            return result != null ? Ok(result) : NotFound();
+            return result != null ? Ok(result) : NotFound(new { message = "Producto no encontrado" });
         }
 
-        // POST: api/admin/products
+        [Authorize]
         [HttpPost("api/admin/products")]
         [ProducesResponseType(typeof(ProductoDto), (int)HttpStatusCode.Created)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         public async Task<IActionResult> Post([FromBody] ProductoDto model)
         {
             var result = await service.InsertProductAsync(model);
             return CreatedAtAction(nameof(Get), new { id = result.Id }, result);
         }
 
-        // PUT: api/admin/products/{id}
+        [Authorize]
         [HttpPut("api/admin/products/{id:int}")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> Put(int id, [FromBody] ProductoDto model)
         {
@@ -57,9 +59,10 @@ namespace ChocolatesSV.API.Controllers
                 : NotFound(new { message = "Producto no encontrado para actualizar" });
         }
 
-        // DELETE: api/admin/products/{id}
+        [Authorize]
         [HttpDelete("api/admin/products/{id:int}")]
         [ProducesResponseType((int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.Unauthorized)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
         public async Task<IActionResult> SoftDelete(int id)
         {

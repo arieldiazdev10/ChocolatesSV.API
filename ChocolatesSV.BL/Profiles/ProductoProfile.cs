@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using ChocolatesSV.Entities.DTO;
 using ChocolatesSV.Entities.Models;
+using Microsoft.Data.SqlClient;
 
 namespace ChocolatesSV.BL.Profiles
 {
@@ -15,6 +16,7 @@ namespace ChocolatesSV.BL.Profiles
                 .ForMember(dest => dest.Descripcion, opt => opt.MapFrom(src => src.Descripcion))
                 .ForMember(dest => dest.Precio, opt => opt.MapFrom(src => src.Precio))
                 .ForMember(dest => dest.ImagenUrl, opt => opt.MapFrom(src => src.URLImagen))
+                .ForMember(dest => dest.EsDestacado, opt => opt.MapFrom(src => src.Destacado))
                 .ForMember(dest => dest.Stock, opt => opt.MapFrom(src => src.Existencias))
                 .ForMember(dest => dest.Activo, opt => opt.MapFrom(src => src.Activo))
                 .ReverseMap();
